@@ -9,49 +9,33 @@ import Foundation
 import UIKit
 
 class Canvas: UIView {
-    var curLine = [CGPoint]()
-    var lines = [[CGPoint]]()
+    
+    var negativePath = UIBezierPath()
+    var positivePath = UIBezierPath()
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
-        
-        guard let context = UIGraphicsGetCurrentContext() else {
-            return
-        }
-        
-        for line in lines {
-            for (i, p) in line.enumerated() {
-                if i == 0 {
-                    context.move(to: p)
-                } else {
-                    context.addLine(to: p)
-                }
-            }
-        }
-        
-        for (i, p) in curLine.enumerated() {
-            if i == 0 {
-                context.move(to: p)
-            } else {
-                context.addLine(to: p)
-            }
-        }
-        
-        context.strokePath()
+        negativePath.stroke()
+        positivePath.stroke()
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let newTouchPoint = touches.first?.location(in: nil) else { return }
+        negativePath.move(to: newTouchPoint)
+        positivePath.move(to: newTouchPoint)
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else {
             return
         }
-        
-        let point = touch.location(in: nil)
-        curLine.append(point)
+        let newTouchPoint = touch.location(in: nil)
+        let force = touch.force
+
+        negativePath.addLine(to: CGPoint(x: newTouchPoint.x - 100 * force,
+                                         y: newTouchPoint.y - 100 * force))
+        positivePath.addLine(to: CGPoint(x: newTouchPoint.x + 100 * force,
+                                         y: newTouchPoint.y + 100 * force))
         setNeedsDisplay()
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        lines.append(curLine)
-        curLine = [CGPoint]()
     }
 }
