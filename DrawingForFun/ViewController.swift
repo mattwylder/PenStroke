@@ -11,11 +11,15 @@ class ViewController: UIViewController {
     
     let canvas = Canvas()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         view.addSubview(canvas)
         canvas.backgroundColor = .white
         canvas.frame = view.frame
+
+//        pathAB.stroke()
     }
+    
+    
 }
 
