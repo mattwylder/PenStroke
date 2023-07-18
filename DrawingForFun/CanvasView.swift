@@ -10,6 +10,8 @@ import UIKit
 
 class Canvas: UIView {
     
+    let isTouchPathEnabled = false
+    
     var negativePath = UIBezierPath()
     var positivePath = UIBezierPath()
     
@@ -17,34 +19,68 @@ class Canvas: UIView {
 
     var lastTouchPoint = CGPoint(x: 0, y: 0)
     
-    override func didMoveToSuperview() {
-        let startPoint = CGPoint(x: 600, y: 500)
-        pathAB.move(to: startPoint)
-        showSquare(startPoint)
-        lastTouchPoint = startPoint
-    }
-    
     override func draw(_ rect: CGRect) {
         super.draw(rect)
-        //        negativePath.stroke()
-        //        positivePath.stroke()
-        pathAB.stroke()
+        if isTouchPathEnabled {
+            pathAB.stroke()
+        }
+        negativePath.stroke()
+        positivePath.stroke()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let newTouchPoint = touches.first?.location(in: nil) else { return }
-        
-        pathAB.addLine(to: newTouchPoint)
-        showSquare(newTouchPoint)
-        addSidePoints(pointA: lastTouchPoint, pointB: newTouchPoint)
-        setNeedsDisplay()
-//        negativePath.move(to: newTouchPoint)
-//        positivePath.move(to: newTouchPoint)
+        guard let newTouchPoint = touches.first?.location(in: nil) else {
+            return
+        }
+        if isTouchPathEnabled {
+            pathAB.move(to: newTouchPoint)
+        }
+        negativePath.move(to: newTouchPoint)
+        positivePath.move(to: newTouchPoint)
         lastTouchPoint = newTouchPoint
+        setNeedsDisplay()
     }
     
-    func addSidePoints(pointA: CGPoint, pointB: CGPoint) {
-        let width: CGFloat = 50
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else {
+            return
+        }
+        let newTouchPoint = touch.location(in: nil)
+        renderGutterPaths(width: touch.force*50, pointA: newTouchPoint, pointB: lastTouchPoint)
+        if isTouchPathEnabled {
+            pathAB.addLine(to: newTouchPoint)
+        }
+        lastTouchPoint = newTouchPoint
+        setNeedsDisplay()
+    }
+    
+    private func distance(p1: CGPoint, p2: CGPoint) -> CGFloat {
+        sqrt(pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2))
+    }
+    
+    private func hypotenuse(width: CGFloat, distance: CGFloat) -> CGFloat {
+        sqrt(pow(width, 2) + pow(distance, 2))
+    }
+    
+    private func edgePoint(width: CGFloat, newPoint: CGPoint, prevPoint: CGPoint) -> CGPoint {
+        let distance = distance(p1: newPoint, p2: prevPoint)
+        let hypotenuse = hypotenuse(width: width, distance: distance)
+        let angle = asin(width / hypotenuse)
+        return CGPoint(x: prevPoint.x + hypotenuse * cos(angle),
+                       y: prevPoint.y + hypotenuse * sin(angle))
+    }
+    
+    private func showSquare(_ point: CGPoint) {
+        let size: CGFloat = 10
+        let square = UIView(frame: CGRect(x: point.x - size / 2,
+                                          y: point.y - size / 2,
+                                          width: size,
+                                          height: size))
+        square.backgroundColor = .black
+        self.addSubview(square)
+    }
+    
+    private func renderGutterPaths(width: CGFloat, pointA: CGPoint, pointB: CGPoint) {
         let distance = distance(p1: pointA, p2: pointB)
         let hypotenuse = hypotenuse(width: width, distance: distance)
         let angleAB = atan((pointB.y - pointA.y) / (pointB.x - pointA.x))
@@ -78,70 +114,7 @@ class Canvas: UIView {
         let pointAtNegativeAngle = CGPoint(x: newNegativeX,
                                            y: newNegativeY)
         
-        showSquare(pointAtNegativeAngle)
-        showSquare(pointAtPositiveAngle)
+        negativePath.addLine(to: pointAtNegativeAngle)
+        positivePath.addLine(to: pointAtPositiveAngle)
     }
-    
-//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        guard let touch = touches.first else {
-//            return
-//        }
-//        let newTouchPoint = touch.location(in: nil)
-//        let force: CGFloat = touch.force
-//        let forceMultiplier: CGFloat = 100 * force
-//        
-//        // The new lines should be perpendicular angles to the new touch point
-//        // we know distance between the two touched points, we know the distance to the drawn paths (force)
-//        // solve hypotenuse for distance from lastPoint
-//        // hypotenuse = sqrt(sq(force) + sq(distance))
-//        // angle = sin(force / hypotenuse)
-//        // or angle = tan(force / distance)
-//        // desired point is a vector starting at lastTouchPoint moving hypotenuse points at angle
-//        
-//        // let's not consider force for a bit
-//        
-//        let strokeWidth: CGFloat = 100
-//
-//        negativePath.addLine(to: edgePoint(width: strokeWidth * force,
-//                                           newPoint: newTouchPoint,
-//                                           prevPoint: lastTouchPoint))
-////        positivePath.addLine(to: CGPoint(x: newTouchPoint.x + 100,
-////                                         y: newTouchPoint.y + 100))
-//        setNeedsDisplay()
-//        lastTouchPoint = newTouchPoint
-//    }
-    
-    
-    private func distance(p1: CGPoint, p2: CGPoint) -> CGFloat {
-        sqrt(pow((p2.x - p1.x), 2) + pow((p2.y - p1.y), 2))
-    }
-    
-    private func hypotenuse(width: CGFloat, distance: CGFloat) -> CGFloat {
-        sqrt(pow(width, 2) + pow(distance, 2))
-    }
-    
-    private func edgePoint(width: CGFloat, newPoint: CGPoint, prevPoint: CGPoint) -> CGPoint {
-        let distance = distance(p1: newPoint, p2: prevPoint)
-        let hypotenuse = hypotenuse(width: width, distance: distance)
-        let angle = asin(width / hypotenuse)
-        return CGPoint(x: prevPoint.x + hypotenuse * cos(angle),
-                       y: prevPoint.y + hypotenuse * sin(angle))
-    }
-    
-    func showSquare(_ point: CGPoint) {
-        let size: CGFloat = 10
-        let square = UIView(frame: CGRect(x: point.x - size / 2,
-                                          y: point.y - size / 2,
-                                          width: size,
-                                          height: size))
-        square.backgroundColor = .black
-        let label = UILabel()
-        label.text = "(\(point.x), \(point.y))"
-        label.textColor = .black
-        label.frame = CGRect(x: point.x, y: point.y, width: 100, height: 20)
-        label.sizeToFit()
-//        self.addSubview(label)
-        self.addSubview(square)
-    }
-
 }
