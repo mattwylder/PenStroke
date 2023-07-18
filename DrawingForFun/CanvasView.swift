@@ -20,18 +20,9 @@ class CanvasView: UIView {
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         for path in paths {
-            if isTouchPathEnabled {
-                path.centerPath.stroke()
-            }
-            path.negativePath.stroke()
-            path.positivePath.stroke()
+            path.onlyPath.stroke()
         }
-        
-        if isTouchPathEnabled {
-            curStroke.centerPath.stroke()
-        }
-        curStroke.negativePath.stroke()
-        curStroke.positivePath.stroke()
+        curStroke.onlyPath.stroke()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

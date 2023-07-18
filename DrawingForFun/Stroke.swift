@@ -8,43 +8,45 @@
 import Foundation
 import UIKit
 
-struct Stroke {
+class Stroke {
     
     // MARK: Configuration Properties
     
-    var forceMultiplier: CGFloat = 50
+    private var forceMultiplier: CGFloat = 50
     
     // MARK: Path Management Properties
+
+    let onlyPath = UIBezierPath()
     
-    let centerPath: UIBezierPath
-    let negativePath: UIBezierPath
-    let positivePath: UIBezierPath
-    
-    init() {
-        centerPath = UIBezierPath()
-        negativePath = UIBezierPath()
-        positivePath = UIBezierPath()
-    }
+    private var lastNegativePoint = CGPoint()
+    private var lastCenterPoint = CGPoint()
+    private var lastPositivePoint = CGPoint()
     
     // MARK: - Path Management Methods
     
     func start(at p: CGPoint) {
-        centerPath.move(to: p)
-        negativePath.move(to: p)
-        positivePath.move(to: p)
+        onlyPath.move(to: p)
+        
+        lastCenterPoint = p
+        lastNegativePoint = p
+        lastPositivePoint = p
     }
     
     func move(to newCenterPoint: CGPoint, with force: CGFloat) {
-        let lastCenterPoint = centerPath.currentPoint
         guard let (positivePoint, negativePoint) =
-                calculateGutterPoints(width: forceMultiplier * force,
+                calculateGutterPoints(width: calculateStrokeWidth(force: force),
                                       pointA: lastCenterPoint,
                                       pointB: newCenterPoint) else {
             return
         }
-        centerPath.move(to: newCenterPoint)
-        positivePath.addLine(to: positivePoint)
-        negativePath.addLine(to: negativePoint)
+        onlyPath.addLine(to: positivePoint)
+        onlyPath.move(to: lastNegativePoint)
+        onlyPath.addLine(to: negativePoint)
+        onlyPath.move(to: positivePoint)
+        
+        lastCenterPoint = newCenterPoint
+        lastPositivePoint = positivePoint
+        lastNegativePoint = negativePoint
     }
     
     // MARK: - Geometry Methods
@@ -105,5 +107,9 @@ struct Stroke {
     
     private func hypotenuse(width: CGFloat, distance: CGFloat) -> CGFloat {
         sqrt(pow(width, 2) + pow(distance, 2))
+    }
+    
+    private func calculateStrokeWidth(force: CGFloat) -> CGFloat {
+        min(forceMultiplier * force, 25)
     }
 }
