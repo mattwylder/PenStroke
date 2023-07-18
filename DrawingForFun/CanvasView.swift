@@ -19,6 +19,7 @@ class CanvasView: UIView {
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
+        UIColor.green.setFill()
         for path in paths {
             path.onlyPath.stroke()
         }
@@ -45,8 +46,13 @@ class CanvasView: UIView {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else {
+            return
+        }
+        curStroke.finish(at: touch.location(in: nil))
         paths.append(curStroke)
         curStroke = Stroke()
+        setNeedsDisplay()
     }
     
     func clear() {

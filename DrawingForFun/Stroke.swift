@@ -12,7 +12,8 @@ class Stroke {
     
     // MARK: Configuration Properties
     
-    private var forceMultiplier: CGFloat = 50
+    var forceMultiplier: CGFloat = 50
+    var smoothen = true
     
     // MARK: Path Management Properties
 
@@ -40,13 +41,24 @@ class Stroke {
             return
         }
         onlyPath.addLine(to: positivePoint)
-        onlyPath.move(to: lastNegativePoint)
+        if smoothen {
+            onlyPath.move(to: lastNegativePoint)
+        }
         onlyPath.addLine(to: negativePoint)
-        onlyPath.move(to: positivePoint)
+        if smoothen {
+            onlyPath.move(to: positivePoint)
+        }
         
         lastCenterPoint = newCenterPoint
         lastPositivePoint = positivePoint
         lastNegativePoint = negativePoint
+    }
+    
+    func finish(at newCenterPoint: CGPoint) {
+        onlyPath.addLine(to: newCenterPoint)
+        onlyPath.move(to: lastNegativePoint)
+        onlyPath.addLine(to: newCenterPoint)
+        onlyPath.close()
     }
     
     // MARK: - Geometry Methods
@@ -110,6 +122,6 @@ class Stroke {
     }
     
     private func calculateStrokeWidth(force: CGFloat) -> CGFloat {
-        min(forceMultiplier * force, 25)
+        forceMultiplier * force
     }
 }
