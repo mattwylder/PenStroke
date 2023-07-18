@@ -14,7 +14,7 @@
 		D997C44C2A61D98500EC56D0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D997C44B2A61D98500EC56D0 /* Assets.xcassets */; };
 		D997C44F2A61D98500EC56D0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D997C44D2A61D98500EC56D0 /* LaunchScreen.storyboard */; };
 		D997C4572A61E11500EC56D0 /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997C4562A61E11500EC56D0 /* CanvasView.swift */; };
-		D997C4592A61E1B700EC56D0 /* DrawPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997C4582A61E1B700EC56D0 /* DrawPoint.swift */; };
+		D997C45B2A66CBB100EC56D0 /* Stroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997C45A2A66CBB100EC56D0 /* Stroke.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 		D997C44E2A61D98500EC56D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D997C4502A61D98500EC56D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D997C4562A61E11500EC56D0 /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
-		D997C4582A61E1B700EC56D0 /* DrawPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawPoint.swift; sourceTree = "<group>"; };
+		D997C45A2A66CBB100EC56D0 /* Stroke.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stroke.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +68,7 @@
 				D997C44B2A61D98500EC56D0 /* Assets.xcassets */,
 				D997C44D2A61D98500EC56D0 /* LaunchScreen.storyboard */,
 				D997C4502A61D98500EC56D0 /* Info.plist */,
-				D997C4582A61E1B700EC56D0 /* DrawPoint.swift */,
+				D997C45A2A66CBB100EC56D0 /* Stroke.swift */,
 			);
 			path = DrawingForFun;
 			sourceTree = "<group>";
@@ -146,8 +146,8 @@
 			files = (
 				D997C4472A61D98400EC56D0 /* ViewController.swift in Sources */,
 				D997C4432A61D98400EC56D0 /* AppDelegate.swift in Sources */,
-				D997C4592A61E1B700EC56D0 /* DrawPoint.swift in Sources */,
 				D997C4572A61E11500EC56D0 /* CanvasView.swift in Sources */,
+				D997C45B2A66CBB100EC56D0 /* Stroke.swift in Sources */,
 				D997C4452A61D98400EC56D0 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

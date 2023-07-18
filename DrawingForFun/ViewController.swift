@@ -9,17 +9,19 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let canvas = Canvas()
-
+    @IBOutlet weak var canvas: CanvasView!
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        view.addSubview(canvas)
         canvas.backgroundColor = .white
-        canvas.frame = view.frame
-
-//        pathAB.stroke()
     }
     
+    @IBAction func didUndo(_ sender: Any) {
+        canvas.undo()
+    }
     
+    @IBAction func didClear(_ sender: Any) {
+        canvas.clear()
+    }
 }
 
