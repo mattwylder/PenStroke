@@ -12,18 +12,17 @@ class CanvasView: UIView {
     
     let isTouchPathEnabled = false
     
-    var paths = [Stroke]()
+    var paths = [UIBezierPath]()
     var curStroke = Stroke()
 
     var lastTouchPoint = CGPoint(x: 0, y: 0)
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
-        UIColor.green.setFill()
         for path in paths {
-            path.onlyPath.stroke()
+            path.fill()
         }
-        curStroke.onlyPath.stroke()
+        curStroke.toBezier().fill()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -50,7 +49,7 @@ class CanvasView: UIView {
             return
         }
         curStroke.finish(at: touch.location(in: nil))
-        paths.append(curStroke)
+        paths.append(curStroke.toBezier())
         curStroke = Stroke()
         setNeedsDisplay()
     }

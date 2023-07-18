@@ -16,21 +16,16 @@ class Stroke {
     var smoothen = true
     
     // MARK: Path Management Properties
-
-    let onlyPath = UIBezierPath()
-    
-    private var lastNegativePoint = CGPoint()
     private var lastCenterPoint = CGPoint()
-    private var lastPositivePoint = CGPoint()
     
+    private var positiveArr = [CGPoint]()
+    private var negativeArr = [CGPoint]()
+
     // MARK: - Path Management Methods
     
     func start(at p: CGPoint) {
-        onlyPath.move(to: p)
-        
+        positiveArr.append(p)
         lastCenterPoint = p
-        lastNegativePoint = p
-        lastPositivePoint = p
     }
     
     func move(to newCenterPoint: CGPoint, with force: CGFloat) {
@@ -40,25 +35,35 @@ class Stroke {
                                       pointB: newCenterPoint) else {
             return
         }
-        onlyPath.addLine(to: positivePoint)
-        if smoothen {
-            onlyPath.move(to: lastNegativePoint)
-        }
-        onlyPath.addLine(to: negativePoint)
-        if smoothen {
-            onlyPath.move(to: positivePoint)
-        }
         
         lastCenterPoint = newCenterPoint
-        lastPositivePoint = positivePoint
-        lastNegativePoint = negativePoint
+        positiveArr.append(positivePoint)
+        negativeArr.append(negativePoint)
     }
     
     func finish(at newCenterPoint: CGPoint) {
-        onlyPath.addLine(to: newCenterPoint)
-        onlyPath.move(to: lastNegativePoint)
-        onlyPath.addLine(to: newCenterPoint)
-        onlyPath.close()
+        positiveArr.append(newCenterPoint)
+    }
+    
+    func toBezier() -> UIBezierPath {
+        let result = UIBezierPath()
+        
+        for (i, p) in positiveArr.enumerated() {
+            if i == 0 {
+                result.move(to: p)
+            } else {
+                result.addLine(to: p)
+            }
+        }
+        
+        for (i, p) in negativeArr.reversed().enumerated() {
+            if i == negativeArr.endIndex {
+                result.close()
+            } else {
+                result.addLine(to: p)
+            }
+        }
+        return result
     }
     
     // MARK: - Geometry Methods
