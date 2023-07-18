@@ -63,10 +63,15 @@ struct Stroke {
         let newPositiveX: CGFloat
         let newNegativeX: CGFloat
         
-        let isUpward = pointB.y < pointA.y
+        let isStraightUpOrDown = pointB.x == pointA.x
         let isRightward = pointB.x > pointA.x
 
-        if isRightward || (pointB.x == pointA.x && isUpward) {
+        if isStraightUpOrDown {
+            newPositiveY = pointA.y + hypotenuse * sin(positiveAngle)
+            newNegativeY = pointA.y + hypotenuse * sin(negativeAngle)
+            newPositiveX = pointA.x + hypotenuse * cos(positiveAngle)
+            newNegativeX = pointA.x + hypotenuse * cos(negativeAngle)
+        } else if isRightward {
             newPositiveY = pointA.y + hypotenuse * sin(positiveAngle)
             newNegativeY = pointA.y + hypotenuse * sin(negativeAngle)
             newPositiveX = pointA.x + hypotenuse * cos(positiveAngle)
