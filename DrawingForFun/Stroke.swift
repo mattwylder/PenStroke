@@ -36,10 +36,12 @@ struct Stroke {
     
     func move(to newCenterPoint: CGPoint, with force: CGFloat) {
         let lastCenterPoint = centerPath.currentPoint
-        let (positivePoint, negativePoint) =
-        calculateGutterPoints(width: forceMultiplier * force,
-                              pointA: lastCenterPoint,
-                              pointB: newCenterPoint)
+        guard let (positivePoint, negativePoint) =
+                calculateGutterPoints(width: forceMultiplier * force,
+                                      pointA: lastCenterPoint,
+                                      pointB: newCenterPoint) else {
+            return
+        }
         centerPath.move(to: newCenterPoint)
         positivePath.addLine(to: positivePoint)
         negativePath.addLine(to: negativePoint)
@@ -47,9 +49,11 @@ struct Stroke {
     
     // MARK: - Geometry Methods
     
-    private func calculateGutterPoints(width: CGFloat,
-                                       pointA: CGPoint,
-                                       pointB: CGPoint) -> (positive: CGPoint, negative: CGPoint) {
+    private func calculateGutterPoints(
+        width: CGFloat,
+        pointA: CGPoint,
+        pointB: CGPoint
+    ) -> (positive: CGPoint, negative: CGPoint)? {
         let strokeLength = distance(p1: pointA, p2: pointB)
         let hypotenuse = hypotenuse(width: width, distance: strokeLength)
         let strokeAngle = atan((pointB.y - pointA.y) / (pointB.x - pointA.x))
@@ -81,6 +85,11 @@ struct Stroke {
             newNegativeY = pointA.y - hypotenuse * sin(negativeAngle)
             newPositiveX = pointA.x - hypotenuse * cos(positiveAngle)
             newNegativeX = pointA.x - hypotenuse * cos(negativeAngle)
+        }
+        
+        if newPositiveX.isNaN || newNegativeX.isNaN ||
+            newPositiveY.isNaN || newNegativeY.isNaN {
+            return nil
         }
         
         let pointAtPositiveAngle = CGPoint(x: newPositiveX,
