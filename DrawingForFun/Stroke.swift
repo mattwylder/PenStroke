@@ -127,6 +127,9 @@ class Stroke {
     }
     
     private func calculateStrokeWidth(force: CGFloat) -> CGFloat {
-        forceMultiplier * force
+        if force == 0 {
+            return 10
+        }
+        return forceMultiplier * force
     }
 }
